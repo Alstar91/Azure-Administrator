@@ -119,7 +119,7 @@ MgmtSubnet
 The architecture follows a layered network design:
 
 ```
-vnet-enterprise-lab (10.0.0.0/16)
+vnet-lab (10.0.0.0/16)
 │
 ├── AppSubnet      (10.0.1.0/24)
 │
