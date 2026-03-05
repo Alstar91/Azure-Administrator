@@ -10,7 +10,7 @@ Creates resource groups only if they do not already exist.
 #>
 
 # Ensure connection
-Connect-AzAccount
+Connect-AzAccount -UseDeviceAuthentication
 
 # ================================
 # Global Variables
