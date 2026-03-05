@@ -9,7 +9,7 @@ Applies CanNotDelete lock only if missing.
 #>
 
 # Ensure connection
-Connect-AzAccount
+Connect-AzAccount -UseDeviceAuthentication
 
 # ================================
 # Global Variables
