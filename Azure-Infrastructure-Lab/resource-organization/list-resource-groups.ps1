@@ -8,7 +8,7 @@ Shows active subscription context before listing.
 #>
 
 # Ensure connection
-Connect-AzAccount
+Connect-AzAccount -UseDeviceAuthentication
 
 # ================================
 # Get Current Subscription Context
