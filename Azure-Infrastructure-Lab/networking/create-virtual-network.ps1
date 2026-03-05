@@ -17,7 +17,7 @@ Creates the VNet only if it does not already exist.
 
 # Ensure connection
 
-Connect-AzAccount
+Connect-AzAccount -UseDeviceAuthentication
 
 # ================================
 
@@ -53,7 +53,6 @@ $mgmtSubnet = New-AzVirtualNetworkSubnetConfig `    -Name "MgmtSubnet"`
 
 if (-not (Get-AzVirtualNetwork -Name $vnetName -ResourceGroupName $resourceGroup -ErrorAction SilentlyContinue)) {
 
-```
 New-AzVirtualNetwork `
     -Name $vnetName `
     -ResourceGroupName $resourceGroup `
@@ -62,7 +61,6 @@ New-AzVirtualNetwork `
     -Subnet $appSubnet, $dbSubnet, $mgmtSubnet
 
 Write-Host "Virtual Network created successfully."
-```
 
 }
 else {
