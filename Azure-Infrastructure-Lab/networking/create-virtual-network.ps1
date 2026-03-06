@@ -47,22 +47,46 @@ $mgmtSubnet = New-AzVirtualNetworkSubnetConfig `    -Name "MgmtSubnet"`
 
 # ================================
 
-# Create Virtual Network
+# Check Resource Group Exists
 
 # ================================
 
-if (-not (Get-AzVirtualNetwork -Name $vnetName -ResourceGroupName $resourceGroup -ErrorAction SilentlyContinue)) {
+$rg = Get-AzResourceGroup `
+        -Name $resourceGroup `
+        -ErrorAction SilentlyContinue
 
-New-AzVirtualNetwork `
-    -Name $vnetName `
-    -ResourceGroupName $resourceGroup `
-    -Location $location `
-    -AddressPrefix $addressSpace `
-    -Subnet $appSubnet, $dbSubnet, $mgmtSubnet
+if (-not $rg) {
 
-Write-Host "Virtual Network created successfully."
-
+    Write-Host "Resource Group '$resourceGroup' does not exist. Cannot create Virtual Network." -ForegroundColor Red
 }
+
 else {
-Write-Host "Virtual Network already exists. Skipping creation."
+
+    # ================================
+    
+    # Check if Virtual Network Exists
+    
+    # ================================
+
+    $vnet = Get-AzVirtualNetwork `
+                -Name $vnetName `
+                -ResourceGroupName $resourceGroup `
+                -ErrorAction SilentlyContinue
+
+    if (-not $vnet) {
+
+        New-AzVirtualNetwork `
+            -Name $vnetName `
+            -ResourceGroupName $resourceGroup `
+            -Location $location `
+            -AddressPrefix $addressSpace `
+            -Subnet $appSubnet, $dbSubnet, $mgmtSubnet
+
+        Write-Host "Virtual Network created successfully." -ForegroundColor Green
+    }
+    else {
+
+        Write-Host "Virtual Network already exists. Skipping creation." -ForegroundColor Yellow
+    }
+
 }
