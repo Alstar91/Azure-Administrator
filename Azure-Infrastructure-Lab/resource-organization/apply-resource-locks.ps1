@@ -45,7 +45,8 @@ if ($rg) {
         New-AzResourceLock `
             -ResourceGroupName $prodRgName `
             -LockName $lockName `
-            -LockLevel $lockLevel
+            -LockLevel $lockLevel `
+            -Force
 
         Write-Host "Lock applied successfully."
     }
