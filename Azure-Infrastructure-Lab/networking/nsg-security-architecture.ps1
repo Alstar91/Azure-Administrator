@@ -9,7 +9,7 @@ for App, DB, and Management tiers.
 #>
 
 # Ensure connection
-Connect-AzAccount
+Connect-AzAccount -UseDeviceAuthentication
 
 # =========================================
 
