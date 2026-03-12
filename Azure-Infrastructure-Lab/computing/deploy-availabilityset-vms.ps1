@@ -35,7 +35,7 @@ $dbSubnetName  = "DBSubnet"
 
 $availabilitySetName = "availset-app"
 
-$vmSize = "Standard_B2s"
+$vmSize = "Standard_D2s_v3"
 
 $adminUser = "azureadmin"
 $autoShutdownTime = "1900"
