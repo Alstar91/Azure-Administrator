@@ -231,6 +231,8 @@ $properties = @{
 New-AzResource `
    -Location $location `
    -ResourceId $shutdownResourceId `
+   -ResourceType "Microsoft.DevTestLab/schedules" `
+   -ApiVersion "2025-04-01" `
    -Properties $properties `
    -Force
 
