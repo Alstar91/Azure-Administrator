@@ -59,16 +59,16 @@ return
 # =========================================
 
 $vnet = Get-AzVirtualNetwork `
--Name $vnetName`
+-Name $vnetName `
 -ResourceGroupName $resourceGroup `
 -ErrorAction SilentlyContinue
 
 $appSubnet = Get-AzVirtualNetworkSubnetConfig `
--Name $appSubnetName`
+-Name $appSubnetName `
 -VirtualNetwork $vnet
 
 $dbSubnet = Get-AzVirtualNetworkSubnetConfig `
--Name $dbSubnetName`
+-Name $dbSubnetName `
 -VirtualNetwork $vnet
 
 # =========================================
@@ -78,7 +78,7 @@ $dbSubnet = Get-AzVirtualNetworkSubnetConfig `
 # =========================================
 
 if (-not (Get-AzAvailabilitySet `
--ResourceGroupName $resourceGroup`
+-ResourceGroupName $resourceGroup `
 -Name $availabilitySetName `
 -ErrorAction SilentlyContinue)) {
 
@@ -110,37 +110,37 @@ function Create-LinuxVM {
 param($vmName,$subnet)
 
 $nic = New-AzNetworkInterface `
--Name "$vmName-nic"`
+-Name "$vmName-nic" `
 -ResourceGroupName $resourceGroup `
--Location $location`
+-Location $location `
 -SubnetId $subnet.Id
 
 $cred = Get-Credential -Message "Enter credentials for $vmName"
 
 $vmConfig = New-AzVMConfig `
--VMName $vmName`
+-VMName $vmName `
 -VMSize $vmSize `
 -AvailabilitySetId (Get-AzAvailabilitySet -ResourceGroupName $resourceGroup -Name $availabilitySetName).Id
 
 $vmConfig = Set-AzVMOperatingSystem `
--VM $vmConfig`
+-VM $vmConfig `
 -Linux `
--ComputerName $vmName`
+-ComputerName $vmName `
 -Credential $cred
 
 $vmConfig = Set-AzVMSourceImage `
--VM $vmConfig`
+-VM $vmConfig `
 -PublisherName Canonical `
 -Offer UbuntuServer`
 -Skus 22_04-lts `
 -Version latest
 
 $vmConfig = Add-AzVMNetworkInterface `
--VM $vmConfig`
+-VM $vmConfig `
 -Id $nic.Id
 
 New-AzVM `
--ResourceGroupName $resourceGroup`
+-ResourceGroupName $resourceGroup `
 -Location $location `
 -VM $vmConfig
 
@@ -164,38 +164,38 @@ Create-LinuxVM "app-vm-02" $appSubnet
 # =========================================
 
 $nic = New-AzNetworkInterface `
--Name "db-vm-01-nic"`
+-Name "db-vm-01-nic" `
 -ResourceGroupName $resourceGroup `
--Location $location`
+-Location $location `
 -SubnetId $dbSubnet.Id
 
 $cred = Get-Credential -Message "Enter credentials for db-vm-01"
 
 $vmConfig = New-AzVMConfig `
--VMName "db-vm-01"`
+-VMName "db-vm-01" `
 -VMSize $vmSize
 
 $vmConfig = Set-AzVMOperatingSystem `
--VM $vmConfig`
+-VM $vmConfig `
 -Windows `
--ComputerName "db-vm-01"`
+-ComputerName "db-vm-01" `
 -Credential $cred `
--ProvisionVMAgent`
+-ProvisionVMAgent `
 -EnableAutoUpdate
 
 $vmConfig = Set-AzVMSourceImage `
--VM $vmConfig`
+-VM $vmConfig `
 -PublisherName MicrosoftWindowsServer `
--Offer WindowsServer`
+-Offer WindowsServer `
 -Skus 2022-Datacenter `
 -Version latest
 
 $vmConfig = Add-AzVMNetworkInterface `
--VM $vmConfig`
+-VM $vmConfig `
 -Id $nic.Id
 
 New-AzVM `
--ResourceGroupName $resourceGroup`
+-ResourceGroupName $resourceGroup `
 -Location $location `
 -VM $vmConfig
 
