@@ -136,7 +136,7 @@ $vmConfig = Set-AzVMSourceImage `
 -VM $vmConfig `
 -PublisherName Canonical `
 -Offer UbuntuServer `
--Skus 22_04-lts `
+-Skus ubuntu-22_04-lts `
 -Version latest
 
 $vmConfig = Add-AzVMNetworkInterface `
