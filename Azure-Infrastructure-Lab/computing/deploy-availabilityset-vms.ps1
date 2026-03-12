@@ -26,6 +26,7 @@ Connect-AzAccount -UseDeviceAuthentication
 # =========================================
 
 $resourceGroup = "rg-prod-infrastructure"
+$networkResourceGroup = "rg-networking"
 $location      = "westeurope"
 
 $vnetName = "vnet-lab"
@@ -59,9 +60,14 @@ return
 # =========================================
 
 $vnet = Get-AzVirtualNetwork `
--Name $vnetName `
--ResourceGroupName $resourceGroup `
--ErrorAction SilentlyContinue
+    -Name $vnetName `
+    -ResourceGroupName $networkResourceGroup `
+    -ErrorAction SilentlyContinue
+
+if (-not $vnet) {
+    Write-Host "Virtual Network $vnetName not found in $networkResourceGroup" -ForegroundColor Red
+    return
+}
 
 $appSubnet = Get-AzVirtualNetworkSubnetConfig `
 -Name $appSubnetName `
