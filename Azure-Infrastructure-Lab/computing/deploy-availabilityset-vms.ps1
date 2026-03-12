@@ -88,7 +88,6 @@ if (-not (Get-AzAvailabilitySet `
 -Name $availabilitySetName `
 -ErrorAction SilentlyContinue)) {
 
-```
 New-AzAvailabilitySet `
     -Location $location `
     -Name $availabilitySetName `
@@ -98,7 +97,6 @@ New-AzAvailabilitySet `
     -PlatformUpdateDomainCount 5
 
 Write-Host "Availability Set created."
-```
 
 }
 else {
@@ -137,7 +135,7 @@ $vmConfig = Set-AzVMOperatingSystem `
 $vmConfig = Set-AzVMSourceImage `
 -VM $vmConfig `
 -PublisherName Canonical `
--Offer UbuntuServer`
+-Offer UbuntuServer `
 -Skus 22_04-lts `
 -Version latest
 
@@ -217,7 +215,6 @@ $vmList = "app-vm-01","app-vm-02","db-vm-01"
 
 foreach ($vm in $vmList) {
 
-```
 Set-AzVMAutoShutdown `
     -ResourceGroupName $resourceGroup `
     -Name $vm `
@@ -225,6 +222,5 @@ Set-AzVMAutoShutdown `
     -Time $autoShutdownTime
 
 Write-Host "Auto shutdown enabled for $vm"
-```
 
 }
