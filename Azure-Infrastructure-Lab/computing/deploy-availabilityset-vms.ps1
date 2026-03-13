@@ -215,26 +215,11 @@ $vmList = "app-vm-01","app-vm-02","db-vm-01"
 
 foreach ($vm in $vmList) {
 
-$resourceId = (Get-AzVM -ResourceGroupName $resourceGroup -Name $vm).Id
-
-$shutdownResourceId = "$resourceId/providers/microsoft.devtestlab/schedules/shutdown-computevm-$vm"
-
-$properties = @{
-    status = "Enabled"
-    taskType = "ComputeVmShutdownTask"
-    dailyRecurrence = @{
-        time = "1900"
-    }
-    timeZoneId = "GMT Standard Time"
-}
-
-New-AzResource `
-   -Location $location `
-   -ResourceId $shutdownResourceId `
-   -ResourceType "Microsoft.DevTestLab/schedules" `
-   -ApiVersion "2025-04-01" `
-   -Properties $properties `
-   -Force
+    az vm auto-shutdown `
+        --resource-group rg-prod-infrastructure `
+        --name $vm `
+        --time 1900 `
+        --timezone "GMT Standard Time"
 
 Write-Host "Auto shutdown enabled for $vm"
 
