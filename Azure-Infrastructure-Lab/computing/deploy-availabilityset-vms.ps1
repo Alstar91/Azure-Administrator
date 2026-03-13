@@ -218,8 +218,7 @@ foreach ($vm in $vmList) {
     az vm auto-shutdown `
         --resource-group rg-prod-infrastructure `
         --name $vm `
-        --time 1900 `
-        --timezone "GMT Standard Time"
+        --time 1900
 
 Write-Host "Auto shutdown enabled for $vm"
 
