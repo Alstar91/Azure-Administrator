@@ -43,7 +43,7 @@ $dbSubnet = New-AzVirtualNetworkSubnetConfig `    -Name "DBSubnet"`
 -AddressPrefix "10.0.2.0/24"
 
 $mgmtSubnet = New-AzVirtualNetworkSubnetConfig `    -Name "MgmtSubnet"`
--AddressPrefix "10.0.3.0/24"
+-AddressPrefix "10.0.3.0/27"
 
 # ================================
 
