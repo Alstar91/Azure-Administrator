@@ -148,6 +148,13 @@ foreach ($config in $nsgConfigs) {
             -DestinationPortRange $rule.Port
 
         $nsg.SecurityRules.Add($ruleConfig)
+
+        if (-not ($nsg.SecurityRules | Where-Object { $_.Name -eq $rule.Name })) {
+            $nsg.SecurityRules.Add($ruleConfig)
+        }
+        else {
+            Write-Host "Rule already exists:" $rule.Name
+        }
     }
 
     Set-AzNetworkSecurityGroup -NetworkSecurityGroup $nsg
