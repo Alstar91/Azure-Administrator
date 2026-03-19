@@ -114,7 +114,6 @@ if (-not (Get-AzBastion -Name $bastionName -ResourceGroupName $resourceGroup -Er
     New-AzBastion `
         -Name $bastionName `
         -ResourceGroupName $resourceGroup `
-        -Location $location `
         -PublicIpAddress $publicIp `
         -VirtualNetwork $vnet
 
