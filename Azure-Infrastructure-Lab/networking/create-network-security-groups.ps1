@@ -65,10 +65,16 @@ $nsgConfigs = @(
         Prefix = "10.0.1.0/24"
         Rules  = @(
             @{
-                Name     = "allow-http"
-                Source   = "*"
+                Name     = "AllowAzureLoadBalancerHTTP"
+                Source   = "AzureLoadBalancer"
                 Port     = "80"
                 Priority = 100
+            },
+            @{
+                Name     = "AllowHTTPInternet"
+                Source   = "Internet"
+                Port     = "80"
+                Priority = 110
             }
         )
     },
