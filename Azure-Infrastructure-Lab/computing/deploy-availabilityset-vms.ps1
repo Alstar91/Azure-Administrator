@@ -42,6 +42,25 @@ $autoShutdownTime = "1900"
 
 # =========================================
 
+# Cloud-Init Configuration (Linux VMs)
+
+# =========================================
+
+$cloudInit = @"
+#cloud-config
+package_update: true
+packages:
+  - nginx
+
+runcmd:
+  - systemctl enable nginx
+  - systemctl start nginx
+"@
+
+$cloudInitBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($cloudInit))
+
+# =========================================
+
 # Validate Resource Group
 
 # =========================================
@@ -143,12 +162,14 @@ $vmConfig = Add-AzVMNetworkInterface `
 -VM $vmConfig `
 -Id $nic.Id
 
+$vmConfig.OSProfile.CustomData = $cloudInitBase64
+
 New-AzVM `
 -ResourceGroupName $resourceGroup `
 -Location $location `
 -VM $vmConfig
 
-Write-Host "$vmName created."
+Write-Host "$vmName created with cloud-init (nginx installed)."
 
 }
 
