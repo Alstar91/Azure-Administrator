@@ -49,12 +49,55 @@ $autoShutdownTime = "1900"
 $cloudInit = @"
 #cloud-config
 package_update: true
+
 packages:
   - nginx
+  - openssl
+
+write_files:
+  - path: /etc/nginx/sites-available/default
+    permissions: '0644'
+    content: |
+      server {
+          listen 80 default_server;
+          listen [::]:80 default_server;
+
+          root /var/www/html;
+          index index.html;
+
+          server_name _;
+
+          location / {
+              try_files \$uri \$uri/ =404;
+          }
+      }
+
+      server {
+          listen 443 ssl;
+
+          ssl_certificate /etc/ssl/certs/nginx.crt;
+          ssl_certificate_key /etc/ssl/private/nginx.key;
+
+          root /var/www/html;
+          index index.html;
+
+          server_name _;
+
+          location / {
+              try_files \$uri \$uri/ =404;
+          }
+      }
 
 runcmd:
+  # Generate self-signed certificate
+  - openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/ssl/private/nginx.key \
+    -out /etc/ssl/certs/nginx.crt \
+    -subj "/C=IE/ST=Dublin/L=Dublin/O=InfraLab/OU=IT/CN=localhost"
+
+  # Enable and restart nginx
   - systemctl enable nginx
-  - systemctl start nginx
+  - systemctl restart nginx
 "@
 
 $cloudInitBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($cloudInit))
