@@ -24,7 +24,7 @@ $location      = "westeurope"
 
 $vnetName      = "vnet-lab"
 $bastionName   = "bastion-host"
-$publicIpName  = "bastion-ip"
+$publicIpName  = "bastion-public-ip"
 
 # ================================
 # Validate Resource Group
@@ -104,6 +104,10 @@ else {
 # ================================
 # Create Bastion Host
 # ================================
+
+$vnet = Get-AzVirtualNetwork `
+    -Name $vnetName `
+    -ResourceGroupName $resourceGroup
 
 if (-not (Get-AzBastion -Name $bastionName -ResourceGroupName $resourceGroup -ErrorAction SilentlyContinue)) {
 
