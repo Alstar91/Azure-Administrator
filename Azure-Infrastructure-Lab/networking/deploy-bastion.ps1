@@ -115,8 +115,7 @@ if (-not (Get-AzBastion -Name $bastionName -ResourceGroupName $resourceGroup -Er
         -Name $bastionName `
         -ResourceGroupName $resourceGroup `
         -PublicIpAddress $publicIp `
-        -VirtualNetwork $vnet `
-        -SubnetId $subnet.Id
+        -VirtualNetwork $vnet
 
     Write-Host "Azure Bastion deployed successfully."
 }
