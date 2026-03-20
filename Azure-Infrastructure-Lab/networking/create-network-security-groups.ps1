@@ -75,6 +75,12 @@ $nsgConfigs = @(
                 Source   = "Internet"
                 Port     = "80"
                 Priority = 110
+            },
+            @{
+                Name     = "AllowHTTPSInternet"
+                Source   = "Internet"
+                Port     = "443"
+                Priority = 120
             }
         )
     },
