@@ -1,14 +1,18 @@
 <#
 .SYNOPSIS
-Adds HTTPS support (port 443) to existing Load Balancer.
+Deploys a Public Standard Load Balancer with HTTP (80) and HTTPS (443).
 
 .DESCRIPTION
-- Adds HTTPS health probe
-- Adds HTTPS load balancing rule
-- Reuses existing backend pool and frontend IP
+Creates:
+- Public IP
+- Load Balancer
+- Backend Pool
+- HTTP + HTTPS Health Probes
+- HTTP + HTTPS Load Balancing Rules
+- Attaches VMs to backend pool
 
 NOTE:
-SSL termination must be configured on VM (nginx).
+HTTPS requires nginx SSL configuration on VMs.
 #>
 
 # =========================================
@@ -21,91 +25,195 @@ Connect-AzAccount -UseDeviceAuthentication
 
 # =========================================
 
-# Variables
+# Global Variables
 
 # =========================================
 
-$resourceGroup = "rg-networking"
-$lbName        = "lb-app"
+$resourceGroup        = "rg-networking"
+$location             = "westeurope"
 
-$httpsProbeName = "https-probe"
-$httpsRuleName  = "https-rule"
+$lbName               = "lb-app"
+$frontendName         = "lb-frontend"
+$publicIpName         = "lb-public-ip"
+$backendPoolName      = "app-backend-pool"
+
+$httpProbeName        = "http-probe"
+$httpsProbeName       = "https-probe"
+
+$httpRuleName         = "http-rule"
+$httpsRuleName        = "https-rule"
+
+$appVmNames           = @("app-vm-01","app-vm-02")
+$appVmResourceGroup   = "rg-prod-infrastructure"
 
 # =========================================
 
-# Get Load Balancer
+# Validate Resource Group
 
 # =========================================
 
-$lb = Get-AzLoadBalancer `
-    -Name $lbName `
-    -ResourceGroupName $resourceGroup
-
-if (-not $lb) {
-    Write-Host "Load Balancer not found." -ForegroundColor Red
+$rg = Get-AzResourceGroup -Name $resourceGroup -ErrorAction SilentlyContinue
+if (-not $rg) {
+    Write-Host "Resource group not found." -ForegroundColor Red
     return
 }
 
 # =========================================
 
-# Create HTTPS Health Probe
+# Create Public IP
 
 # =========================================
 
-if (-not ($lb.Probes | Where-Object { $_.Name -eq $httpsProbeName })) {
+$pip = Get-AzPublicIpAddress `
+    -Name $publicIpName `
+    -ResourceGroupName $resourceGroup `
+    -ErrorAction SilentlyContinue
 
-    $httpsProbe = New-AzLoadBalancerProbeConfig `
-        -Name $httpsProbeName `
-        -Protocol Tcp `
-        -Port 443 `
-        -IntervalInSeconds 5 `
-        -ProbeCount 2
+if (-not $pip) {
+    $pip = New-AzPublicIpAddress `
+        -Name $publicIpName `
+        -ResourceGroupName $resourceGroup `
+        -Location $location `
+        -AllocationMethod Static `
+        -Sku Standard
 
-    $lb.Probes.Add($httpsProbe)
-
-    Write-Host "HTTPS probe created."
+    Write-Host "Public IP created."
 }
 else {
-    Write-Host "HTTPS probe already exists."
+    Write-Host "Public IP already exists."
 }
 
 # =========================================
 
-# Create HTTPS Load Balancing Rule
+# Frontend Config
 
 # =========================================
 
-if (-not ($lb.LoadBalancingRules | Where-Object { $_.Name -eq $httpsRuleName })) {
+$frontendIP = New-AzLoadBalancerFrontendIpConfig `
+    -Name $frontendName `
+    -PublicIpAddress $pip
 
-    $frontend = $lb.FrontendIpConfigurations[0]
-    $backend  = $lb.BackendAddressPools[0]
-    $probe    = $lb.Probes | Where-Object { $_.Name -eq $httpsProbeName }
+# =========================================
 
-    $httpsRule = New-AzLoadBalancerRuleConfig `
-        -Name $httpsRuleName `
-        -FrontendIpConfiguration $frontend `
-        -BackendAddressPool $backend `
-        -Probe $probe `
-        -Protocol Tcp `
-        -FrontendPort 443 `
-        -BackendPort 443 `
-        -IdleTimeoutInMinutes 4 `
-        -LoadDistribution Default
+# Backend Pool
 
-    $lb.LoadBalancingRules.Add($httpsRule)
+# =========================================
 
-    Write-Host "HTTPS rule created."
+$backendPool = New-AzLoadBalancerBackendAddressPoolConfig `
+    -Name $backendPoolName
+
+# =========================================
+
+# HTTP Probe
+
+# =========================================
+
+$httpProbe = New-AzLoadBalancerProbeConfig `
+    -Name $httpProbeName `
+    -Protocol Http `
+    -Port 80 `
+    -RequestPath "/" `
+    -IntervalInSeconds 5 `
+    -ProbeCount 2
+
+# =========================================
+
+# HTTPS Probe
+
+# =========================================
+
+$httpsProbe = New-AzLoadBalancerProbeConfig `
+    -Name $httpsProbeName `
+    -Protocol Tcp `
+    -Port 443 `
+    -IntervalInSeconds 5 `
+    -ProbeCount 2
+
+# =========================================
+
+# HTTP Rule
+
+# =========================================
+
+$httpRule = New-AzLoadBalancerRuleConfig `
+    -Name $httpRuleName `
+    -FrontendIpConfiguration $frontendIP `
+    -BackendAddressPool $backendPool `
+    -Probe $httpProbe `
+    -Protocol Tcp `
+    -FrontendPort 80 `
+    -BackendPort 80 `
+    -IdleTimeoutInMinutes 4 `
+    -LoadDistribution Default
+
+# =========================================
+
+# HTTPS Rule
+
+# =========================================
+
+$httpsRule = New-AzLoadBalancerRuleConfig `
+    -Name $httpsRuleName `
+    -FrontendIpConfiguration $frontendIP `
+    -BackendAddressPool $backendPool `
+    -Probe $httpsProbe `
+    -Protocol Tcp `
+    -FrontendPort 443 `
+    -BackendPort 443 `
+    -IdleTimeoutInMinutes 4 `
+    -LoadDistribution Default
+
+# =========================================
+
+# Create Load Balancer
+
+# =========================================
+
+$lb = Get-AzLoadBalancer `
+    -Name $lbName `
+    -ResourceGroupName $resourceGroup `
+    -ErrorAction SilentlyContinue
+
+if (-not $lb) {
+
+    $lb = New-AzLoadBalancer `
+        -ResourceGroupName $resourceGroup `
+        -Name $lbName `
+        -Location $location `
+        -Sku Standard `
+        -FrontendIpConfiguration $frontendIP `
+        -BackendAddressPool $backendPool `
+        -Probe $httpProbe, $httpsProbe `
+        -LoadBalancingRule $httpRule, $httpsRule
+
+    Write-Host "Load Balancer with HTTP & HTTPS created."
 }
 else {
-    Write-Host "HTTPS rule already exists."
+    Write-Host "Load Balancer already exists."
 }
 
 # =========================================
 
-# Apply Changes
+# Attach VMs to Backend Pool
 
 # =========================================
 
-Set-AzLoadBalancer -LoadBalancer $lb
+foreach ($vmName in $appVmNames) {
 
-Write-Host "HTTPS configuration applied successfully."
+    $vm = Get-AzVM `
+        -Name $vmName `
+        -ResourceGroupName $appVmResourceGroup
+
+    $nicId = $vm.NetworkProfile.NetworkInterfaces[0].Id
+    $nic = Get-AzNetworkInterface -ResourceId $nicId
+
+    $nic.IpConfigurations[0].LoadBalancerBackendAddressPools = @(
+        $lb.BackendAddressPools[0]
+    )
+
+    Set-AzNetworkInterface -NetworkInterface $nic
+
+    Write-Host "$vmName added to backend pool."
+}
+
+Write-Host "Load Balancer (HTTP + HTTPS) setup completed successfully."
