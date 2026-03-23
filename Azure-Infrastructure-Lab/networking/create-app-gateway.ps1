@@ -105,7 +105,6 @@ if (-not $subnet) {
 
     $vnet | Set-AzVirtualNetwork
 
-    # Refresh VNet
     $vnet = Get-AzVirtualNetwork -Name $vnetName -ResourceGroupName $resourceGroup
 
     $subnet = Get-AzVirtualNetworkSubnetConfig `
