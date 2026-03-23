@@ -17,7 +17,40 @@ Creates the VNet only if it does not already exist.
 
 # Ensure connection
 
-Connect-AzAccount -UseDeviceAuthentication
+$subscription = Get-AzSubscription | Select-Object -First 1
+
+if (-not $subscription) {
+    Write-Host "Subscription Not Found." -ForegroundColor Red
+    return
+}
+
+# Create Service Principal
+$servicePrincipal = az ad sp create-for-rbac `
+  --name "my-sp" `
+  --role "Contributor" `
+  --scopes "/subscriptions/$($subscription.Id)" | ConvertFrom-Json
+
+# Assign variables
+$clientId = $servicePrincipal.appId
+$clientSecret = $servicePrincipal.password
+$tenantId = $servicePrincipal.tenant
+$subscriptionId = $subscription.Id
+
+# Set environment variables
+$env:AZURE_CLIENT_ID = $clientId
+$env:AZURE_CLIENT_SECRET = $clientSecret
+$env:AZURE_TENANT_ID = $tenantId
+$env:AZURE_SUBSCRIPTION_ID = $subscriptionId
+
+# Create credential
+$securePassword = ConvertTo-SecureString $clientSecret -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential($clientId, $securePassword)
+
+# Login using Service Principal
+Connect-AzAccount -ServicePrincipal -Credential $credential -Tenant $tenantId
+
+# Set subscription context
+Set-AzContext -SubscriptionId $subscriptionId
 
 # ================================
 
