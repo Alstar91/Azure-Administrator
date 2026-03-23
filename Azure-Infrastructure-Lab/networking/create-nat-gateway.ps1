@@ -9,7 +9,17 @@ without exposing VMs to the public internet.
 #>
 
 # Ensure connection
-Connect-AzAccount -UseDeviceAuthentication
+
+$subscription = Get-AzSubscription | Select-Object -First 1
+
+if (-not $subscription) {
+    Write-Host "Subscription Not Found." -ForegroundColor Red
+    return
+}
+
+Connect-AzAccount -Identity
+
+Set-AzContext -SubscriptionId $subscription.Id
 
 # =========================================
 # Global Variables
