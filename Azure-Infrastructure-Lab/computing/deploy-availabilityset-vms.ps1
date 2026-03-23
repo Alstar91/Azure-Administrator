@@ -62,9 +62,14 @@ write_files:
           listen 80 default_server;
           listen [::]:80 default_server;
 
+          root /var/www/html;
+          index index.nginx-debian.html;
+
           server_name _;
 
-          return 301 https://$host$request_uri;
+          location / {
+              try_files $uri $uri/ =404;
+          }
       }
 
       server {
@@ -77,7 +82,7 @@ write_files:
           ssl_prefer_server_ciphers on;
 
           root /var/www/html;
-          index index.html index.nginx-debian.html;
+          index index.nginx-debian.html;
 
           server_name _;
 
@@ -90,14 +95,14 @@ runcmd:
   # Stop nginx if auto-started
   - systemctl stop nginx
 
-  # Generate certificate (FIXED: single line)
+  # Generate certificate
   - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx.key -out /etc/ssl/certs/nginx.crt -subj "/C=IE/ST=Leinster/L=Dublin/O=Brooklyn/OU=Infrastructure/CN=localhost"
 
   # Fix permissions
   - chmod 600 /etc/ssl/private/nginx.key
   - chmod 644 /etc/ssl/certs/nginx.crt
 
-  # Test config before starting (VERY IMPORTANT)
+  # Test config before starting
   - nginx -t
 
   # Enable + start nginx
