@@ -26,7 +26,9 @@ Connect-AzAccount -Identity
 Set-AzContext -SubscriptionId $subscription.Id
 
 # ================================
+
 # Global Variables
+
 # ================================
 
 $resourceGroup = "rg-networking"
@@ -37,7 +39,9 @@ $bastionName   = "bastion-host"
 $publicIpName  = "bastion-public-ip"
 
 # ================================
+
 # Validate Resource Group
+
 # ================================
 
 $rg = Get-AzResourceGroup -Name $resourceGroup -ErrorAction SilentlyContinue
@@ -48,7 +52,9 @@ if (-not $rg) {
 }
 
 # ================================
+
 # Get Virtual Network
+
 # ================================
 
 $vnet = Get-AzVirtualNetwork `
@@ -62,7 +68,9 @@ if (-not $vnet) {
 }
 
 # ================================
+
 # Ensure AzureBastionSubnet Exists
+
 # ================================
 
 $subnetName = "AzureBastionSubnet"
@@ -88,7 +96,9 @@ else {
 }
 
 # ================================
+
 # Create Public IP for Bastion
+
 # ================================
 
 $publicIp = Get-AzPublicIpAddress `
@@ -112,7 +122,9 @@ else {
 }
 
 # ================================
+
 # Create Bastion Host
+
 # ================================
 
 $vnet = Get-AzVirtualNetwork `
