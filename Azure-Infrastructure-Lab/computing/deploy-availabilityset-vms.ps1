@@ -87,15 +87,22 @@ write_files:
       }
 
 runcmd:
-  # Generate self-signed certificate
-  - openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout /etc/ssl/private/nginx.key \
-    -out /etc/ssl/certs/nginx.crt \
-    -subj "/C=IE/ST=Leinster/L=Dublin/O=Brooklyn/OU=Infrastructure/CN=localhost"
+  # Stop nginx if auto-started
+  - systemctl stop nginx
 
-  # Enable and restart nginx
+  # Generate certificate (FIXED: single line)
+  - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx.key -out /etc/ssl/certs/nginx.crt -subj "/C=IE/ST=Leinster/L=Dublin/O=Brooklyn/OU=Infrastructure/CN=localhost"
+
+  # Fix permissions
+  - chmod 600 /etc/ssl/private/nginx.key
+  - chmod 644 /etc/ssl/certs/nginx.crt
+
+  # Test config before starting (VERY IMPORTANT)
+  - nginx -t
+
+  # Enable + start nginx
   - systemctl enable nginx
-  - systemctl restart nginx
+  - systemctl start nginx
 "@
 
 $cloudInitBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($cloudInit))
