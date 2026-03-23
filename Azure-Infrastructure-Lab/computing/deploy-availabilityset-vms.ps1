@@ -77,7 +77,7 @@ write_files:
           ssl_prefer_server_ciphers on;
 
           root /var/www/html;
-          index index.html;
+          index index.html index.nginx-debian.html;
 
           server_name _;
 
