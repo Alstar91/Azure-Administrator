@@ -63,12 +63,11 @@ write_files:
           listen [::]:80 default_server;
 
           root /var/www/html;
-          index index.nginx-debian.html;
 
           server_name _;
 
           location / {
-              try_files $uri $uri/ =404;
+              try_files $uri /index.nginx-debian.html =404;
           }
       }
 
@@ -82,12 +81,11 @@ write_files:
           ssl_prefer_server_ciphers on;
 
           root /var/www/html;
-          index index.nginx-debian.html;
 
           server_name _;
 
           location / {
-              try_files $uri $uri/ =404;
+              try_files $uri /index.nginx-debian.html =404;
           }
       }
 
