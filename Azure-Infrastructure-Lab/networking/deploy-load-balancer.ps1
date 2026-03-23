@@ -15,13 +15,18 @@ NOTE:
 HTTPS requires nginx SSL configuration on VMs.
 #>
 
-# =========================================
-
 # Ensure Azure Login
 
-# =========================================
+$subscription = Get-AzSubscription | Select-Object -First 1
 
-Connect-AzAccount -UseDeviceAuthentication
+if (-not $subscription) {
+    Write-Host "Subscription Not Found." -ForegroundColor Red
+    return
+}
+
+Connect-AzAccount -Identity
+
+Set-AzContext -SubscriptionId $subscription.Id
 
 # =========================================
 
