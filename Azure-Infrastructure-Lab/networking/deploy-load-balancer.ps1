@@ -37,8 +37,8 @@ Set-AzContext -SubscriptionId $subscription.Id
 $resourceGroup        = "rg-networking"
 $location             = "westeurope"
 
-$lbName               = "lb-app"
-$frontendName         = "lb-frontend"
+$lbName               = "lb-public-app"
+$frontendName         = "lb-public-frontend"
 $publicIpName         = "lb-public-ip"
 $backendPoolName      = "app-backend-pool"
 
