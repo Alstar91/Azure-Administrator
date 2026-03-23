@@ -62,14 +62,9 @@ write_files:
           listen 80 default_server;
           listen [::]:80 default_server;
 
-          root /var/www/html;
-          index index.html;
-
           server_name _;
 
-          location / {
-              try_files \$uri \$uri/ =404;
-          }
+          return 301 https://$host$request_uri;
       }
 
       server {
@@ -78,13 +73,16 @@ write_files:
           ssl_certificate /etc/ssl/certs/nginx.crt;
           ssl_certificate_key /etc/ssl/private/nginx.key;
 
+          ssl_protocols TLSv1.2 TLSv1.3;
+          ssl_prefer_server_ciphers on;
+
           root /var/www/html;
           index index.html;
 
           server_name _;
 
           location / {
-              try_files \$uri \$uri/ =404;
+              try_files $uri $uri/ =404;
           }
       }
 
@@ -93,7 +91,7 @@ runcmd:
   - openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout /etc/ssl/private/nginx.key \
     -out /etc/ssl/certs/nginx.crt \
-    -subj "/C=IE/ST=Dublin/L=Dublin/O=InfraLab/OU=IT/CN=localhost"
+    -subj "/C=IE/ST=Leinster/L=Dublin/O=Brooklyn/OU=Infrastructure/CN=localhost"
 
   # Enable and restart nginx
   - systemctl enable nginx
