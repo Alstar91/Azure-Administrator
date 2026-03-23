@@ -9,6 +9,7 @@ for App, DB, and Management tiers.
 #>
 
 # Ensure connection
+
 $subscription = Get-AzSubscription | Select-Object -First 1
 
 if (-not $subscription) {
