@@ -10,10 +10,22 @@ Creates resource groups only if they do not already exist.
 #>
 
 # Ensure connection
-Connect-AzAccount -UseDeviceAuthentication
+
+$subscription = Get-AzSubscription | Select-Object -First 1
+
+if (-not $subscription) {
+    Write-Host "Subscription Not Found." -ForegroundColor Red
+    return
+}
+
+Connect-AzAccount -Identity
+
+Set-AzContext -SubscriptionId $subscription.Id
 
 # ================================
+
 # Global Variables
+
 # ================================
 
 $location  = "westeurope"
@@ -22,7 +34,9 @@ $project   = "InfraLab"
 $createdOn = (Get-Date).ToString("yyyy-MM-dd")
 
 # ================================
+
 # Production Resource Group
+
 # ================================
 
 $prodRgName = "rg-prod-infrastructure"
@@ -49,7 +63,9 @@ else {
 }
 
 # ================================
+
 # Non-Production Resource Group
+
 # ================================
 
 $nonProdRgName = "rg-nonprod-infrastructure"
@@ -75,7 +91,9 @@ else {
 }
 
 # ================================
+
 # Shared Networking Resource Group
+
 # ================================
 
 $networkRgName = "rg-networking"
@@ -102,7 +120,9 @@ else {
 }
 
 # ================================
+
 # Shared Monitoring Resource Group
+
 # ================================
 
 $monitoringRgName = "rg-monitoring"
