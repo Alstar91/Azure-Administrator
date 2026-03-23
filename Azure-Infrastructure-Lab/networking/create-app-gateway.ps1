@@ -40,7 +40,7 @@ $location        = "westeurope"
 $vnetName        = "vnet-lab"
 $subnetName      = "AppGatewaySubnet"
 
-$appGatewayName = "app-gateway"
+$appGatewayName  = "app-gateway"
 $publicIpName    = "app-gateway-ip"
 
 $backendIP       = "10.0.1.10"   # Internal Load Balancer IP
@@ -51,7 +51,7 @@ $frontendPortName= "https-port"
 $backendPoolName = "app-gateway-backend-pool"
 $httpSettingName = "app-gateway-http-setting"
 $listenerName    = "app-gateway-https-listener"
-$ruleName        = "app-gateway-rule"
+$ruleName        = "app-gateway-http-rule"
 
 $certName        = "ssl-cert"
 $certPath        = "C:\certs\cert.pfx"   # UPDATE PATH
@@ -249,7 +249,7 @@ New-AzApplicationGateway `
     -BackendHttpSettingsCollection $httpSettings `
     -FrontendIpConfigurations $frontendIP `
     -GatewayIpConfigurations (New-AzApplicationGatewayIPConfiguration `
-        -Name "appgw-ipconfig" `
+        -Name "app-gateway-ipconfig" `
         -Subnet $subnet) `
     -FrontendPorts $frontendPort `
     -HttpListeners $listener `
