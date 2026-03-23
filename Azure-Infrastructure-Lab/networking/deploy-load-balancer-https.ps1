@@ -114,6 +114,7 @@ $httpProbe = New-AzLoadBalancerProbeConfig `
     -Port 80 `
     -RequestPath "/" `
     -IntervalInSeconds 5 `
+    -ProbeCount 1
 
 # =========================================
 
@@ -127,6 +128,7 @@ $httpsProbe = New-AzLoadBalancerProbeConfig `
     -Port 443 `
     -RequestPath "/" `
     -IntervalInSeconds 5 `
+    -ProbeCount 1
 
 # =========================================
 
