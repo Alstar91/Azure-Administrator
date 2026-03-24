@@ -119,9 +119,11 @@ else {
 
 # =========================================
 
-# Create Public IP
+# Create Public IP with DNS name
 
 # =========================================
+
+$dnsLabel = "web-app-gateway"   # must be globally unique
 
 $pip = Get-AzPublicIpAddress `
     -Name $publicIpName `
@@ -135,13 +137,16 @@ if (-not $pip) {
         -ResourceGroupName $resourceGroup `
         -Location $location `
         -AllocationMethod Static `
-        -Sku Standard
+        -Sku Standard `
+        -DomainNameLabel $dnsLabel
 
-    Write-Host "Public IP created."
+    Write-Host "Public IP created with DNS label."
 }
 else {
     Write-Host "Public IP already exists."
 }
+
+Write-Host "FQDN:" $pip.DnsSettings.Fqdn
 
 # =========================================
 
