@@ -178,7 +178,7 @@ Write-Host "FQDN:" $fqdn
 
 # =========================================
 
-$subject = "/C=IE/ST=Dublin/L=Dublin/O=InfraLab/OU=IT/CN=$fqdn"
+$subject = "/C=IE/ST=Dublin/L=Dublin/O=Infrastructure/OU=Brooklyn/CN=$fqdn"
 
 Write-Host "Generating SSL certificate..."
 
@@ -296,6 +296,11 @@ $rule = New-AzApplicationGatewayRequestRoutingRule `
 
 # =========================================
 
+$sku = New-AzApplicationGatewaySku `
+    -Name "Standard_v2" `
+    -Tier "Standard_v2" `
+    -Capacity 2
+
 New-AzApplicationGateway `
     -Name $appGatewayName `
     -ResourceGroupName $resourceGroup `
@@ -310,8 +315,7 @@ New-AzApplicationGateway `
     -HttpListeners $listener `
     -RequestRoutingRules $rule `
     -SslCertificates $sslCert `
-    -Sku Standard_v2 `
-    -Capacity 2
+    -Sku $sku
 
 Write-Host "Application Gateway deployed successfully!"
 Write-Host "Access URL: https://$fqdn"
