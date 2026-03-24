@@ -285,7 +285,8 @@ $rule = New-AzApplicationGatewayRequestRoutingRule `
     -RuleType Basic `
     -HttpListener $listener `
     -BackendAddressPool $backendPool `
-    -BackendHttpSettings $httpSettings
+    -BackendHttpSettings $httpSettings `
+    -Priority 100
 
 # =========================================
 
