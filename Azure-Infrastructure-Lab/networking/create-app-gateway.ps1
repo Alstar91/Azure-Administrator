@@ -71,11 +71,8 @@ if (-not (Get-Command openssl -ErrorAction SilentlyContinue)) {
 
 # =========================================
 
-$certPasswordSecure = Read-Host "Enter PFX Password" -AsSecureString
-
-$certPasswordPlain = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-    [Runtime.InteropServices.Marshal]::SecureStringToBSTR($certPasswordSecure)
-)
+$certPasswordPlain = Read-Host "Enter PFX password (no special chars for now)"
+$certPasswordSecure = ConvertTo-SecureString $certPasswordPlain -AsPlainText -Force
 
 # =========================================
 
@@ -199,7 +196,7 @@ openssl pkcs12 -export `
 -out $pfxPath `
 -inkey $keyPath `
 -in $crtPath `
--password pass:$certPasswordPlain
+-passout pass:$certPasswordPlain
 
 # =========================================
 
