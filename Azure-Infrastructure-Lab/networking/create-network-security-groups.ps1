@@ -91,6 +91,18 @@ $nsgConfigs = @(
                 Source   = "Internet"
                 Port     = "443"
                 Priority = 120
+            },
+            @{
+                Name     = "AllowAppGatewayHTTP"
+                Source   = "10.0.5.0/24"   # App Gateway Subnet
+                Port     = "80"
+                Priority = 105
+            },
+            @{
+                Name     = "AllowInternalSubnetHTTP"
+                Source   = "10.0.1.0/24"   # 🔥 FIX (ILB internal traffic)
+                Port     = "80"
+                Priority = 110
             }
         )
     },
