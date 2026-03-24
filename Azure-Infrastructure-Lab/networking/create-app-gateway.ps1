@@ -1,18 +1,12 @@
 <#
 .SYNOPSIS
-Deploys an Application Gateway with HTTPS (SSL termination).
+Deploys Application Gateway with auto-generated SSL certificate.
 
 .DESCRIPTION
-Creates:
-- Dedicated App Gateway Subnet
-- Public IP
-- Application Gateway (Standard_v2)
-- HTTPS Listener (443)
-- Backend Pool (Internal Load Balancer)
-- Routing Rule
-
-NOTE:
-Routes traffic to Internal Load Balancer (10.0.1.10)
+- Creates Public IP with DNS
+- Generates SSL cert using OpenSSL
+- Converts to PFX
+- Deploys Application Gateway
 #>
 
 # Ensure Azure Login
@@ -25,7 +19,6 @@ if (-not $subscription) {
 }
 
 Connect-AzAccount -Identity
-
 Set-AzContext -SubscriptionId $subscription.Id
 
 # =========================================
@@ -43,7 +36,7 @@ $subnetName      = "AppGatewaySubnet"
 $appGatewayName  = "app-gateway"
 $publicIpName    = "app-gateway-ip"
 
-$backendIP       = "10.0.1.10"   # Internal Load Balancer IP
+$backendIP       = "10.0.1.10"
 
 $frontendName    = "app-gateway-frontend"
 $frontendPortName= "https-port"
@@ -54,8 +47,35 @@ $listenerName    = "app-gateway-https-listener"
 $ruleName        = "app-gateway-http-rule"
 
 $certName        = "ssl-cert"
-$certPath        = "C:\certs\cert.pfx"   # UPDATE PATH
-$certPassword    = "password"            # UPDATE PASSWORD
+
+# Paths (cross-platform safe)
+$basePath = Get-Location
+$keyPath  = Join-Path $basePath "appgw.key"
+$crtPath  = Join-Path $basePath "appgw.crt"
+$pfxPath  = Join-Path $basePath "appgw.pfx"
+
+# =========================================
+
+# Validate OpenSSL
+
+# =========================================
+
+if (-not (Get-Command openssl -ErrorAction SilentlyContinue)) {
+    Write-Host "OpenSSL not found. Install it first." -ForegroundColor Red
+    return
+}
+
+# =========================================
+
+# Prompt for PFX Password
+
+# =========================================
+
+$certPasswordSecure = Read-Host "Enter PFX Password" -AsSecureString
+
+$certPasswordPlain = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
+    [Runtime.InteropServices.Marshal]::SecureStringToBSTR($certPasswordSecure)
+)
 
 # =========================================
 
@@ -119,11 +139,14 @@ else {
 
 # =========================================
 
-# Create Public IP with DNS name
+# Create Public IP with DNS
 
 # =========================================
 
-$dnsLabel = "web-app-gateway"   # must be globally unique
+$dnsLabel = Read-Host "Enter DNS label (default: webapp$(Get-Random))"
+if (-not $dnsLabel) {
+    $dnsLabel = "webapp$(Get-Random)"
+}
 
 $pip = Get-AzPublicIpAddress `
     -Name $publicIpName `
@@ -146,7 +169,37 @@ else {
     Write-Host "Public IP already exists."
 }
 
-Write-Host "FQDN:" $pip.DnsSettings.Fqdn
+$fqdn = $pip.DnsSettings.Fqdn
+Write-Host "FQDN:" $fqdn
+
+# =========================================
+
+# Generate Certificate (OpenSSL)
+
+# =========================================
+
+$subject = "/C=IE/ST=Dublin/L=Dublin/O=InfraLab/OU=IT/CN=$fqdn"
+
+Write-Host "Generating SSL certificate..."
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 `
+-keyout $keyPath `
+-out $crtPath `
+-subj "$subject"
+
+# =========================================
+
+# Convert to PFX
+
+# =========================================
+
+Write-Host "Creating PFX..."
+
+openssl pkcs12 -export `
+-out $pfxPath `
+-inkey $keyPath `
+-in $crtPath `
+-password pass:$certPasswordPlain
 
 # =========================================
 
@@ -166,16 +219,14 @@ if ($appGw) {
 
 # =========================================
 
-# SSL Certificate
+# SSL Certificate Object
 
 # =========================================
 
-$securePassword = ConvertTo-SecureString $certPassword -AsPlainText -Force
-
 $sslCert = New-AzApplicationGatewaySslCertificate `
     -Name $certName `
-    -CertificateFile $certPath `
-    -Password $securePassword
+    -CertificateFile $pfxPath `
+    -Password $certPasswordSecure
 
 # =========================================
 
@@ -193,7 +244,7 @@ $frontendPort = New-AzApplicationGatewayFrontendPort `
 
 # =========================================
 
-# Backend Pool (ILB)
+# Backend Pool
 
 # =========================================
 
@@ -262,4 +313,5 @@ New-AzApplicationGateway `
     -Sku Standard_v2 `
     -Capacity 2
 
-Write-Host "Application Gateway setup completed successfully."
+Write-Host "Application Gateway deployed successfully!"
+Write-Host "Access URL: https://$fqdn"
