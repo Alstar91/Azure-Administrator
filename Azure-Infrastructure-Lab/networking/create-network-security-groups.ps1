@@ -75,32 +75,44 @@ $nsgConfigs = @(
         Prefix = "10.0.1.0/24"
         Rules  = @(
             @{
-                Name     = "AllowAzureLoadBalancerHTTP"
+                Name     = "AllowAzureLoadBalancerHTTP" # Browser → Public LB → VM → Port 80
                 Source   = "AzureLoadBalancer"
                 Port     = "80"
                 Priority = 100
             },
             @{
-                Name     = "AllowHTTPInternet"
+                Name     = "AllowAzureLoadBalancerHTTPS" # Browser → Public LB → VM → Port 443
+                Source   = "AzureLoadBalancer"
+                Port     = "443"
+                Priority = 100
+            },
+            @{
+                Name     = "AllowHTTPInternet" # Browser → VM (Public IP) → Port 80
                 Source   = "Internet"
                 Port     = "80"
                 Priority = 110
             },
             @{
-                Name     = "AllowHTTPSInternet"
+                Name     = "AllowHTTPSInternet" # Browser → VM (Public IP) → Port 80
                 Source   = "Internet"
                 Port     = "443"
                 Priority = 120
             },
             @{
-                Name     = "AllowAppGatewayHTTP"
-                Source   = "10.0.5.0/24"   # App Gateway Subnet
+                Name     = "AllowAppGatewayHTTP" # Browser → App Gateway → LB → VM → Port 80
+                Source   = "10.0.5.0/24"  
                 Port     = "80"
                 Priority = 105
             },
             @{
-                Name     = "AllowInternalSubnetHTTP"
-                Source   = "10.0.1.0/24"   # 🔥 FIX (ILB internal traffic)
+                Name     = "AllowAppGatewayHTTPS" # Browser → App Gateway → LB → VM → HTTPS (443)
+                Source   = "10.0.5.0/24"
+                Port     = "443"
+                Priority = 100
+            },
+            @{
+                Name     = "AllowInternalSubnetHTTP" # VM → ILB → VM (east-west traffic)
+                Source   = "10.0.1.0/24"
                 Port     = "80"
                 Priority = 110
             }
