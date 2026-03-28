@@ -41,7 +41,7 @@ Write-Host "Connected to tenant:" $context.TenantId
 
 # =========================================
 
-$tenantDomain = "<your-tenant>.onmicrosoft.com"
+$tenantDomain = "aashishchavan91gmail.onmicrosoft.com"
 
 $appAdminUPN = "app-admin-user@$tenantDomain"
 $appDevUPN   = "app-dev-user@$tenantDomain"
