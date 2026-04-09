@@ -1,7 +1,16 @@
-# =========================================
-# Cleanup Entra ID Resources
-# =========================================
+<#
+.SYNOPSIS
+Removes Microsoft Entra ID users, groups, service principal and app registration.
 
+.DESCRIPTION
+- Deletes users (admin + developer)
+- Deletes groups
+- Deletes service principal
+- Deletes app registration
+
+NOTE:
+Requires Microsoft Graph PowerShell SDK.
+#>
 
 # =========================================
 # Ensure Microsoft Graph Module
