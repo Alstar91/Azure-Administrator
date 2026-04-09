@@ -227,7 +227,7 @@ Out-Host
 
 Write-Host "==== GROUPS ===="
 Get-MgGroup -Filter "startsWith(displayName,'app-')" |
-Select DisplayName  |
+Select DisplayName |
 Out-Host
 
 Write-Host "==== APPLICATION ===="
