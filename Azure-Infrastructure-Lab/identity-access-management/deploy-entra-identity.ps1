@@ -110,12 +110,13 @@ else {
 
 # =========================================
 
-$appAdminsGroup = Get-MgGroup -Filter "displayName eq 'app-admins'" -ErrorAction SilentlyContinue
+$appAdminGroupName = "app-admins"
+$appAdminsGroup = Get-MgGroup -Filter "displayName eq '$appAdminGroupName'" -ErrorAction SilentlyContinue
 
 if (-not $appAdminsGroup) {
 
     $appAdminsGroup = New-MgGroup `
-        -DisplayName "app-admins" `
+        -DisplayName $appAdminGroupName `
         -MailEnabled:$false `
         -MailNickname "appadmins" `
         -SecurityEnabled
@@ -126,12 +127,13 @@ else {
     Write-Host "app-admins group already exists."
 }
 
-$appDevelopersGroup = Get-MgGroup -Filter "displayName eq 'app-developers'" -ErrorAction SilentlyContinue
+$appDevelopersGroupName = "app-developers"
+$appDevelopersGroup = Get-MgGroup -Filter "displayName eq '$appDevelopersGroupName'" -ErrorAction SilentlyContinue
 
 if (-not $appDevelopersGroup) {
 
     $appDevelopersGroup = New-MgGroup `
-        -DisplayName "app-developers" `
+        -DisplayName $appDevelopersGroupName `
         -MailEnabled:$false `
         -MailNickname "appdevelopers" `
         -SecurityEnabled
@@ -217,3 +219,19 @@ Write-Host $secret.SecretText
 Write-Host "========================================="
 
 Write-Host "Entra ID setup completed successfully!"
+
+Write-Host "==== USERS ===="
+Get-MgUser -Filter "userPrincipalName eq '$appAdminUPN'" |
+Select DisplayName, UserPrincipalName
+
+Write-Host "==== GROUPS ===="
+Get-MgGroup -Filter "startsWith(displayName,'app-')" |
+Select DisplayName
+
+Write-Host "==== APPLICATION ===="
+Get-MgApplication -Filter "displayName eq '$appName'" |
+Select DisplayName, AppId
+
+Write-Host "==== SERVICE PRINCIPAL ===="
+Get-MgServicePrincipal -Filter "displayName eq '$appName'" |
+Select DisplayName, AppId
