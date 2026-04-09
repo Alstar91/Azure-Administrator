@@ -222,16 +222,20 @@ Write-Host "Entra ID setup completed successfully!"
 
 Write-Host "==== USERS ===="
 Get-MgUser -Filter "startswith(userPrincipalName, 'app-')" |
-Select DisplayName, UserPrincipalName
+Select DisplayName, UserPrincipalName |
+Out-Host
 
 Write-Host "==== GROUPS ===="
 Get-MgGroup -Filter "startsWith(displayName,'app-')" |
-Select DisplayName
+Select DisplayName  |
+Out-Host
 
 Write-Host "==== APPLICATION ===="
 Get-MgApplication -Filter "displayName eq '$appName'" |
-Select DisplayName, AppId
+Select DisplayName, AppId |
+Out-Host
 
 Write-Host "==== SERVICE PRINCIPAL ===="
 Get-MgServicePrincipal -Filter "displayName eq '$appName'" |
-Select DisplayName, AppId
+Select DisplayName, AppId |
+Out-Host
