@@ -22,8 +22,11 @@ Requires Microsoft Graph PowerShell SDK.
 
 if (-not (Get-Module Microsoft.Graph -ListAvailable)) {
     Write-Host "Microsoft.Graph module not found. Install first." -ForegroundColor Red
-    return
+    Install-Module Microsoft.Graph -Scope CurrentUser -Repository PSGallery -Force
+    Write-Host "Microsoft.Graph module installed successfully." -ForegroundColor Green
 }
+
+Import-Module Microsoft.Graph
 
 Connect-MgGraph -Scopes "User.ReadWrite.All","Group.ReadWrite.All","Application.ReadWrite.All","Directory.ReadWrite.All"
 
