@@ -20,10 +20,12 @@ Requires Microsoft Graph PowerShell SDK.
 
 # =========================================
 
-if (-not (Get-Module Microsoft.Graph -ListAvailable)) {
-    Write-Host "Microsoft.Graph module not found. Install first." -ForegroundColor Red
+$module = Get-Module Microsoft.Graph -ListAvailable
+
+if (-not $module) {
     Install-Module Microsoft.Graph -Scope CurrentUser -Repository PSGallery -Force
-    Write-Host "Microsoft.Graph module installed successfully." -ForegroundColor Green
+} else {
+    Write-Host "Microsoft.Graph already available." -ForegroundColor Green
 }
 
 Import-Module Microsoft.Graph
