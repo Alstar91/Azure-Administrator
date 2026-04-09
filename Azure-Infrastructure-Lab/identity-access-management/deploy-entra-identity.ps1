@@ -221,7 +221,7 @@ Write-Host "========================================="
 Write-Host "Entra ID setup completed successfully!"
 
 Write-Host "==== USERS ===="
-Get-MgUser -Filter "userPrincipalName eq '$appAdminUPN'" |
+Get-MgUser -Filter "startswith(userPrincipalName, 'app-')" |
 Select DisplayName, UserPrincipalName
 
 Write-Host "==== GROUPS ===="
