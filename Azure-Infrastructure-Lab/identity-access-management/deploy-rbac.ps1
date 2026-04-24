@@ -35,8 +35,8 @@ Write-Host "Using Subscription:" $subscription.Name
 
 # =========================================
 
-$resourceGroupNonProd = "rg-nonprod-infra"
-$resourceGroupProd    = "rg-prod-infra"
+$resourceGroupNonProd = "rg-nonprod-infrastructure"
+$resourceGroupProd    = "rg-prod-infrastructure"
 
 $appAdminsGroupName     = "app-admins"
 $appDevelopersGroupName = "app-developers"
