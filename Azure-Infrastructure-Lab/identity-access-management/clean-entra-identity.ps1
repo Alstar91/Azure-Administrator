@@ -13,7 +13,9 @@ Requires Microsoft Graph PowerShell SDK.
 #>
 
 # =========================================
+
 # Ensure Microsoft Graph Module
+
 # =========================================
 
 if (-not (Get-Module Microsoft.Graph -ListAvailable)) {
@@ -37,7 +39,9 @@ $appDevUPN   = "app-dev-user@$tenantDomain"
 $appName     = "app-backend-service"
 
 # =========================================
+
 # Delete Users
+
 # =========================================
 
 $appAdminUser = Get-MgUser -Filter "userPrincipalName eq '$appAdminUPN'" -ErrorAction SilentlyContinue
@@ -53,7 +57,9 @@ if ($appDevUser) {
 }
 
 # =========================================
+
 # Delete Groups
+
 # =========================================
 
 $appAdminsGroup = Get-MgGroup -Filter "displayName eq 'app-admins'" -ErrorAction SilentlyContinue
@@ -69,7 +75,9 @@ if ($appDevelopersGroup) {
 }
 
 # =========================================
+
 # Delete Service Principal
+
 # =========================================
 
 $app = Get-MgApplication -Filter "displayName eq '$appName'" -ErrorAction SilentlyContinue
@@ -83,9 +91,11 @@ if ($app) {
         Write-Host "Deleted Service Principal."
     }
 
-    # =========================================
-    # Delete App Registration
-    # =========================================
+# =========================================
+    
+# Delete App Registration
+    
+# =========================================
 
     Remove-MgApplication -ApplicationId $app.Id
     Write-Host "Deleted App Registration."
