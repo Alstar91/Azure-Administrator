@@ -5,7 +5,6 @@ Assigns RBAC roles to Entra ID groups across subscription and resource groups.
 .DESCRIPTION
 - Assigns Reader at subscription level to developers
 - Assigns Contributor to non-prod resource group
-- Assigns Reader to prod resource group (developers)
 - Assigns Contributor to prod resource group (admins)
 
 Implements least privilege + environment segregation.
