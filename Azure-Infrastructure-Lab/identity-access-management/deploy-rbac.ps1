@@ -59,6 +59,27 @@ Write-Host "Groups resolved successfully."
 
 # =========================================
 
+# Helper: Validate Scope
+
+# =========================================
+
+function Get-ScopeIfExists {
+    param (
+        [string]$ResourceGroupName
+    )
+
+    $rg = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
+
+    if (-not $rg) {
+        Write-Host "Resource group '$ResourceGroupName' NOT FOUND ❌" -ForegroundColor Red
+        return $null
+    }
+
+    return "/subscriptions/$($subscription.Id)/resourceGroups/$ResourceGroupName"
+}
+
+# =========================================
+
 # Helper Function (Idempotent Role Assignment)
 
 # =========================================
@@ -70,6 +91,11 @@ function Assign-RoleIfNotExists {
         [string]$Scope
     )
 
+    if (-not $Scope) {
+        Write-Host "Skipping role assignment due to invalid scope." -ForegroundColor Yellow
+        return
+    }
+
     $existing = Get-AzRoleAssignment `
         -ObjectId $ObjectId `
         -RoleDefinitionName $Role `
@@ -77,13 +103,18 @@ function Assign-RoleIfNotExists {
         -ErrorAction SilentlyContinue
 
     if (-not $existing) {
+        try {
+            New-AzRoleAssignment `
+                -ObjectId $ObjectId `
+                -RoleDefinitionName $Role `
+                -Scope $Scope
 
-        New-AzRoleAssignment `
-            -ObjectId $ObjectId `
-            -RoleDefinitionName $Role `
-            -Scope $Scope
-
-        Write-Host "Assigned $Role at $Scope"
+            Write-Host "Assigned $Role at $Scope"
+        }
+        catch {
+            Write-Host "Failed to assign $Role at $Scope ❌" -ForegroundColor Red
+            Write-Host $_.Exception.Message
+        }
     }
     else {
         Write-Host "$Role already exists at $Scope"
@@ -92,11 +123,21 @@ function Assign-RoleIfNotExists {
 
 # =========================================
 
-# Subscription Level (Reader for Developers)
+# Resolve Scopes
 
 # =========================================
 
 $subscriptionScope = "/subscriptions/$($subscription.Id)"
+$nonProdScope = Get-ScopeIfExists $resourceGroupNonProd
+$prodScope    = Get-ScopeIfExists $resourceGroupProd
+
+# =========================================
+
+# Subscription Level (Reader for Developers)
+
+# =========================================
+
+# $subscriptionScope = "/subscriptions/$($subscription.Id)"
 
 Assign-RoleIfNotExists `
     -ObjectId $appDevelopersGroup.Id `
@@ -109,7 +150,7 @@ Assign-RoleIfNotExists `
 
 # =========================================
 
-$nonProdScope = "/subscriptions/$($subscription.Id)/resourceGroups/$resourceGroupNonProd"
+# $nonProdScope = "/subscriptions/$($subscription.Id)/resourceGroups/$resourceGroupNonProd"
 
 Assign-RoleIfNotExists `
     -ObjectId $appDevelopersGroup.Id `
@@ -122,7 +163,7 @@ Assign-RoleIfNotExists `
 
 # =========================================
 
-$prodScope = "/subscriptions/$($subscription.Id)/resourceGroups/$resourceGroupProd"
+# $prodScope = "/subscriptions/$($subscription.Id)/resourceGroups/$resourceGroupProd"
 
 Assign-RoleIfNotExists `
     -ObjectId $appDevelopersGroup.Id `
