@@ -137,8 +137,6 @@ $prodScope    = Get-ScopeIfExists $resourceGroupProd
 
 # =========================================
 
-# $subscriptionScope = "/subscriptions/$($subscription.Id)"
-
 Assign-RoleIfNotExists `
     -ObjectId $appDevelopersGroup.Id `
     -Role "Reader" `
@@ -150,8 +148,6 @@ Assign-RoleIfNotExists `
 
 # =========================================
 
-# $nonProdScope = "/subscriptions/$($subscription.Id)/resourceGroups/$resourceGroupNonProd"
-
 Assign-RoleIfNotExists `
     -ObjectId $appDevelopersGroup.Id `
     -Role "Contributor" `
@@ -162,8 +158,6 @@ Assign-RoleIfNotExists `
 # Prod Resource Group (Reader for Developers)
 
 # =========================================
-
-# $prodScope = "/subscriptions/$($subscription.Id)/resourceGroups/$resourceGroupProd"
 
 Assign-RoleIfNotExists `
     -ObjectId $appDevelopersGroup.Id `
