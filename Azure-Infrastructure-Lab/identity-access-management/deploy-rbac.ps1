@@ -155,17 +155,6 @@ Assign-RoleIfNotExists `
 
 # =========================================
 
-# Prod Resource Group (Reader for Developers)
-
-# =========================================
-
-Assign-RoleIfNotExists `
-    -ObjectId $appDevelopersGroup.Id `
-    -Role "Reader" `
-    -Scope $prodScope
-
-# =========================================
-
 # Prod Resource Group (Contributor for Admins)
 
 # =========================================
