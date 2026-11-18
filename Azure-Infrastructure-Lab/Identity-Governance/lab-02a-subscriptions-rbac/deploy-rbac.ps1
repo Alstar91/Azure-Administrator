@@ -16,15 +16,25 @@ Implements least privilege + environment segregation.
 
 # =========================================
 
-$subscription = Get-AzSubscription | Select-Object -First 1
+if (-not (Get-AzContext)) {
+    Connect-AzAccount -UseDeviceAuthentication | Out-Null
+}
 
-if (-not $subscription) {
-    Write-Host "Subscription not found." -ForegroundColor Red
+if (-not (Get-AzContext)) {
+    Write-Host "Azure login failed ❌" -ForegroundColor Red
+    Write-Host "Reason: no Azure session is available, so no roles can be assigned."
     return
 }
 
-Connect-AzAccount -UseDeviceAuthentication
-Set-AzContext -SubscriptionId $subscription.Id
+$subscription = Get-AzSubscription | Select-Object -First 1
+
+if (-not $subscription) {
+    Write-Host "Subscription not found ❌" -ForegroundColor Red
+    Write-Host "Reason: the signed-in account has no access to any subscription."
+    return
+}
+
+Set-AzContext -SubscriptionId $subscription.Id | Out-Null
 
 Write-Host "Using Subscription:" $subscription.Name
 
