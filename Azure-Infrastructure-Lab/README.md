@@ -8,7 +8,7 @@ Reference: [AZ-104T00 course](https://learn.microsoft.com/en-in/training/courses
 | Domain | Lab | Status | Tasks |
 |---|---|---|---|
 | Identity & Governance | [Lab 01 – Manage Microsoft Entra ID Identities](Identity-Governance/lab-01-entra-identities) | ✅ | 2/2 |
-|  | [Lab 02a – Manage Subscriptions and RBAC](Identity-Governance/lab-02a-subscriptions-rbac) | 🟡 | 1/4 |
+|  | [Lab 02a – Manage Subscriptions and RBAC](Identity-Governance/lab-02a-subscriptions-rbac) | 🟡 | 2/4 |
 |  | [Lab 02b – Manage Governance via Azure Policy](Identity-Governance/lab-02b-governance-policy) | 🟡 | 2/4 |
 | Storage | [Lab 07 – Manage Azure Storage](Storage/lab-07-storage) | ❌ | 0/3 |
 | Compute | [Lab 03b – Manage Azure Resources by Using ARM Templates](Compute/lab-03b-arm-bicep) | ❌ | 0/5 |
@@ -22,6 +22,6 @@ Reference: [AZ-104T00 course](https://learn.microsoft.com/en-in/training/courses
 | Monitor & Backup | [Lab 10 – Implement Data Protection](Monitor-Backup/lab-10-data-protection) | ❌ | 0/5 |
 |  | [Lab 11 – Implement Monitoring](Monitor-Backup/lab-11-monitoring) | ❌ | 0/6 |
 
-**Overall:** 2 done · 5 in progress · 7 not started (~11/56 tasks)
+**Overall:** 2 done · 5 in progress · 7 not started (~12/56 tasks)
 
 Legend: ✅ done · 🟡 in progress · ❌ not started · ➕ [Beyond-Labs](Beyond-Labs) = extra work outside the official labs
